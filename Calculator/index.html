@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./assets/css/styles.css">
+    <title>Calculator App</title>
+</head>
+
+<body>
+    <section class="cal-area">
+        <input type="text" class="display" id="displayResult">
+        <div class="calc-container">
+          <!-- Left side: digits, clear, and equals -->
+          <div class="digits">
+            <div class="row">
+              <button onclick="clearScreen()" class="clear" type="button">CE</button>
+              <button onclick="calculate()" class="calc" type="button">=</button>
+            </div>
+            <div class="row">
+              <button onclick="display('1')" class="one" type="button">1</button>
+              <button onclick="display('2')" class="two" type="button">2</button>
+              <button onclick="display('3')" class="three" type="button">3</button>
+            </div>
+            <div class="row">
+              <button onclick="display('4')" class="four" type="button">4</button>
+              <button onclick="display('5')" class="five" type="button">5</button>
+              <button onclick="display('6')" class="six" type="button">6</button>
+            </div>
+            <div class="row">
+              <button onclick="display('7')" class="seven" type="button">7</button>
+              <button onclick="display('8')" class="eight" type="button">8</button>
+              <button onclick="display('9')" class="nine" type="button">9</button>
+            </div>
+            <div class="row">
+              <button onclick="display('0')" class="zero" type="button">0</button>
+              <button onclick="display('.')" class="dot" type="button">.</button>
+            </div>
+          </div>
+          <!-- Right side: operators -->
+          <div class="operators">
+            <button onclick="display('+')" class="plus" type="button">+</button>
+            <button onclick="display('-')" class="minus" type="button">-</button>
+            <button onclick="display('*')" class="multiply" type="button">*</button>
+            <button onclick="display('/')" class="divide" type="button">/</button>
+          </div>
+        </div>
+      </section>
+      
+
+
+    <script src="./assets/js/index.js"></script>
+</body>
+
+</html>

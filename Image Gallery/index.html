@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./assets/styles.css">
+    <title>Responsive Image Gallery</title>
+</head>
+
+<body>
+    <div class="gallery">
+        <div class="upload-section">
+            <label for="img-upload" class="upload-label">Upload Image(s)</label>
+            <input type="file" id="img-upload" accept="image/*" multiple>
+        </div>
+        <div class="main-image" id="main-image-container">
+            <!-- Main image will be displayed here -->
+        </div>
+        <div class="image-list" id="image-list">
+            <!-- Thumbnails will be appended here -->
+        </div>
+        <div class="no-images-message" id="no-images-message">
+            <p>No images uploaded yet. <br>Please upload images to display them here.</p>
+        </div>
+    </div>
+
+    <script src="./assets/index.js"></script>
+</body>
+
+</html>

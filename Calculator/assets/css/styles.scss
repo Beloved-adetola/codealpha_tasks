@@ -1,0 +1,107 @@
+@import "./variables.scss";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.cal-area {
+  max-width: 350px;
+  margin: 40px auto;
+  padding: 20px;
+  background: $bg-color;
+  border-radius: 20px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+// Display styling
+.display {
+  width: 100%;
+  height: 60px;
+  text-align: right;
+  margin-bottom: 20px;
+  font-size: 2rem;
+  border: none;
+  background: $display-bg;
+  border-radius: 10px;
+  padding: 0 10px;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+// Layout for the main calculator area using grid
+.calc-container {
+  display: grid;
+  grid-template-columns: 3fr 1fr; // Left column for digits; right column for operators
+  grid-gap: 15px;
+}
+
+// Left side digits area styling
+.digits {
+  display: grid;
+  grid-gap: 15px;
+  // Each row will contain 2 or 3 buttons depending on the row
+  .row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 15px;
+  }
+}
+
+// Operators column styling
+.operators {
+  display: grid;
+  grid-template-rows: repeat(4, 1fr);
+  grid-gap: 15px;
+}
+
+// General button styling
+button {
+  font-size: 1.5rem;
+  border: none;
+  border-radius: 10px;
+  background: $light-color;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    background: #858383;
+  }
+
+  &:active {
+    transform: translateY(2px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  }
+}
+
+// Specific button color styling
+.clear {
+  background: $danger-color;
+  color: $light-color;
+}
+
+.calc {
+  background: $primary-color;
+  color: $light-color;
+}
+
+.operators button {
+  background: $secondary-color;
+  color: $light-color;
+}
+
+// Responsive adjustments for smaller screens
+@media (max-width: 600px) {
+  .calc-container {
+    grid-template-columns: 1fr; // Stack digits and operators vertically
+  }
+  .operators {
+    grid-template-columns: repeat(4, 1fr); // Spread operators evenly in a row
+    grid-template-rows: none;
+  }
+  .digits .row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
