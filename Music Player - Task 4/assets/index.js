@@ -55,12 +55,12 @@ document.addEventListener("DOMContentLoaded", function () {
       tracks.forEach((track) => {
         const li = document.createElement("li");
         li.classList.add("music");
+        li.setAttribute("data-id", track.id);
         li.innerHTML = `<i class='bx bxs-music' style='color:#0262a6'></i> ${
           track.name
         }
-                        <audio src="${URL.createObjectURL(
-                          track.file
-                        )}"></audio>`;
+                        <audio src="${URL.createObjectURL(track.file)}"></audio>
+                        <button class="delete-btn"><i class="bx bx-trash"></i></button>`;
         musicList.appendChild(li);
       });
       updateMusicItems();
@@ -88,6 +88,15 @@ document.addEventListener("DOMContentLoaded", function () {
     const items = document.querySelectorAll(".music");
     items.forEach((item, index) => {
       item.onclick = () => playTrack(index);
+
+      const deleteBtn = item.querySelector(".delete-btn");
+      if (deleteBtn) {
+        deleteBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const id = item.getAttribute("data-id");
+          deleteTrack(id, item);
+        });
+      }
     });
     updateNavigationButtons();
   }
@@ -112,6 +121,48 @@ document.addEventListener("DOMContentLoaded", function () {
       if (messageDiv) messageDiv.remove();
       musicList.style.display = "block";
     }
+  }
+
+  // Delete a track from the list and IndexedDB
+  // Delete track from IndexedDB and remove its element from the UI
+  function deleteTrack(id, liElement) {
+    const transaction = db.transaction(storeName, "readwrite");
+    const store = transaction.objectStore(storeName);
+    const deleteRequest = store.delete(Number(id));
+    deleteRequest.onsuccess = function () {
+      liElement.remove();
+      updateMusicItems();
+      checkEmptyMusicList();
+      const items = document.querySelectorAll(".music");
+      // If no tracks remain, reset the player state
+      if (items.length === 0) {
+        if (currentAudio) {
+          currentAudio.pause();
+        }
+        currentAudio = null;
+        currentIndex = -1;
+        play.innerHTML =
+          "<i class='bx bx-play-circle' style='color:#fff; font-size: 30px;'></i>";
+        nowPlaying.textContent = "Now Playing: None";
+        progress.style.width = "0%";
+        const elapsedElem = document.getElementById("elapsedTime");
+        const remainingElem = document.getElementById("remainingTime");
+        if (elapsedElem) elapsedElem.textContent = "0:00";
+        if (remainingElem) remainingElem.textContent = "0:00";
+      } else {
+        // If the deleted track was the one currently playing, play the next available track.
+        if (currentAudio && liElement.getAttribute("data-id") == id) {
+          // Ensure currentIndex is in range
+          if (currentIndex >= items.length) {
+            currentIndex = 0;
+          }
+          playTrack(currentIndex);
+        }
+      }
+    };
+    deleteRequest.onerror = function (e) {
+      console.error("Error deleting track", e);
+    };
   }
 
   // Update next/prev button states based on currentIndex and playlist length
@@ -148,7 +199,10 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error("Audio element not found for track", index);
       return;
     }
-    currentAudio.play();
+    // Call play() and catch promise errors
+    currentAudio.play().catch((error) => {
+      if (error.name !== "AbortError") console.error(error);
+    });
     play.innerHTML =
       "<i class='bx bx-pause-circle' style='color:#fff; font-size: 30px;'></i>";
     // Update Now Playing info (clone the element and remove its audio tag)
@@ -187,7 +241,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Previous track function
   function prevTrack() {
     if (!currentAudio) return;
-    if (currentAudio.currentTime > 3) {
+    if (currentAudio.currentTime > 5) {
       currentAudio.currentTime = 0;
     } else {
       let prevIndex = currentIndex - 1;
@@ -199,23 +253,22 @@ document.addEventListener("DOMContentLoaded", function () {
   // Format time helper (M:SS)
   function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
+    const sec = Math.floor(seconds % 60);
+    return `${minutes}:${sec < 10 ? "0" : ""}${sec}`;
   }
 
   // Update progress bar and time displays
   function updateProgressBar(audio) {
-    if (audio.duration) {
-      const progressPercent = (audio.currentTime / audio.duration) * 100;
-      progress.style.width = `${progressPercent}%`;
-      const elapsedElem = document.getElementById("elapsedTime");
-      const remainingElem = document.getElementById("remainingTime");
-      if (elapsedElem && remainingElem) {
-        elapsedElem.textContent = formatTime(audio.currentTime);
-        remainingElem.textContent = formatTime(
-          audio.duration - audio.currentTime
-        );
-      }
+    if (!audio || !audio.duration) return;
+    const progressPercent = (audio.currentTime / audio.duration) * 100;
+    progress.style.width = `${progressPercent}%`;
+    const elapsedElem = document.getElementById("elapsedTime");
+    const remainingElem = document.getElementById("remainingTime");
+    if (elapsedElem && remainingElem) {
+      elapsedElem.textContent = formatTime(audio.currentTime);
+      remainingElem.textContent = formatTime(
+        audio.duration - audio.currentTime
+      );
     }
   }
 
@@ -228,7 +281,9 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     } else {
       if (currentAudio.paused) {
-        currentAudio.play();
+        currentAudio.play().catch((error) => {
+          if (error.name !== "AbortError") console.error(error);
+        });
         play.innerHTML =
           "<i class='bx bx-pause-circle' style='color:#fff; font-size: 30px;'></i>";
       } else {
@@ -305,12 +360,15 @@ document.addEventListener("DOMContentLoaded", function () {
       const store = transaction.objectStore(storeName);
       const data = { name: fileName, file: file };
       const addRequest = store.add(data);
-      addRequest.onsuccess = function () {
+      addRequest.onsuccess = function (e) {
+        const id = e.target.result;
         // Add track to UI
         const li = document.createElement("li");
         li.classList.add("music");
+        li.setAttribute("data-id", id);
         li.innerHTML = `<i class='bx bxs-music' style='color:#0262a6'></i> ${fileName}
-                        <audio src="${URL.createObjectURL(file)}"></audio>`;
+                        <audio src="${url}"></audio>
+                        <button class="delete-btn"><i class="bx bx-trash"></i></button>`;
         musicList.appendChild(li);
         updateMusicItems();
         checkEmptyMusicList();
