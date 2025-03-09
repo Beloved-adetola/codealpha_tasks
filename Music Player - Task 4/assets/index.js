@@ -366,9 +366,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const li = document.createElement("li");
         li.classList.add("music");
         li.setAttribute("data-id", id);
-        li.innerHTML = `<i class='bx bxs-music' style='color:#0262a6'></i> ${fileName}
-                        <audio src="${url}"></audio>
-                        <button class="delete-btn"><i class="bx bx-trash"></i></button>`;
+        li.innerHTML = `<i class='bx bxs-music' style='color:#0262a6'></i> ${fileName} <audio src="${url}"></audio>
+                        <button class="delete-btn" type="button"><i class='bx bxs-trash' style='color:#0262a6'></i></button>`;
         musicList.appendChild(li);
         updateMusicItems();
         checkEmptyMusicList();
