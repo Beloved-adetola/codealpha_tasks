@@ -143,12 +143,12 @@ document.addEventListener("DOMContentLoaded", function () {
         currentIndex = -1;
         play.innerHTML =
           "<i class='bx bx-play-circle' style='color:#fff; font-size: 30px;'></i>";
-        nowPlaying.textContent = "Now Playing: None";
+        nowPlaying.textContent = "No track selected.";
         progress.style.width = "0%";
         const elapsedElem = document.getElementById("elapsedTime");
         const remainingElem = document.getElementById("remainingTime");
-        if (elapsedElem) elapsedElem.textContent = "0:00";
-        if (remainingElem) remainingElem.textContent = "0:00";
+        if (elapsedElem) elapsedElem.textContent = "";
+        if (remainingElem) remainingElem.textContent = "";
       } else {
         // If the deleted track was the one currently playing, play the next available track.
         if (currentAudio && liElement.getAttribute("data-id") == id) {
